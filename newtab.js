@@ -1,5 +1,4 @@
 let dashwiseUrl = 'https://www.google.com';
-let searchMode = false;
 
 function normalizeUrl(url) {
   if (!url) return dashwiseUrl;
@@ -32,20 +31,18 @@ function loadFrame(url) {
   }, 5000);
 }
 
-function toggleSearchMode() {
-  searchMode = !searchMode;
-  document.getElementById('search-toggle').textContent = searchMode ? 'Exit search mode' : 'Search mode';
-  loadFrame(setSearchMode(dashwiseUrl, searchMode));
-}
-
 function loadDashwise() {
-  chrome.storage.sync.get({ newTabUrl: 'https://www.google.com' }, (items) => {
+  chrome.storage.sync.get({ replaceNewTab: true, newTabUrl: 'https://www.google.com', newTabOpenSearch: false }, (items) => {
+    if (!items.replaceNewTab) {
+      document.body.classList.add('frame-failed');
+      document.getElementById('fallback-message').textContent = 'Dashwise new tab replacement is disabled in extension settings.';
+      return;
+    }
     dashwiseUrl = normalizeUrl(items.newTabUrl);
-    loadFrame(setSearchMode(dashwiseUrl, searchMode));
+    loadFrame(setSearchMode(dashwiseUrl, !!items.newTabOpenSearch));
   });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('search-toggle').addEventListener('click', toggleSearchMode);
   loadDashwise();
 });
