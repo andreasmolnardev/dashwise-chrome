@@ -40,15 +40,6 @@
       left: 0;
       display: none;
     }
-    .toolbar {
-      position: fixed;
-      top: 18px;
-      right: 18px;
-      z-index: 3;
-      display: flex;
-      gap: 8px;
-    }
-    .toolbar button,
     .fallback button {
       border: 1px solid rgba(255,255,255,0.14);
       border-radius: 999px;
@@ -80,12 +71,9 @@
     <div class="spinner"></div>
     <p>Loading Dashwise...</p>
   </div>
-  <div class="toolbar">
-    <button id="search-toggle" type="button">Search mode</button>
-  </div>
   <div id="fallback" class="fallback">
     <h1>Dashwise is ready</h1>
-    <p>This Dashwise server cannot be embedded in the new tab page. Use the search mode button to open it with search enabled.</p>
+    <p id="fallback-message">This Dashwise server cannot be embedded in the new tab page.</p>
   </div>
   <iframe id="content-frame"></iframe>
   <script src="newtab.js"></script>
