@@ -179,6 +179,31 @@
     }
   }
 
+  async function saveReadLater() {
+    const tab = await getActiveTab();
+    if (!tab || !tab.url) { showToast('No active tab'); return; }
+
+    const item = {
+      title: tab.title || tab.url,
+      url: tab.url,
+      savedAt: new Date().toISOString(),
+    };
+
+    try {
+      await apiFetch('/links/items', {
+        method: 'POST',
+        body: JSON.stringify({ title: item.title, url: item.url, tags: ['read-later'] }),
+      });
+      showToast('Saved to read later');
+    } catch (err) {
+      const existing = await storageGet({ dashwiseReadLater: [] });
+      const items = existing.dashwiseReadLater.filter((saved) => saved.url !== item.url);
+      items.unshift(item);
+      await storageSet({ dashwiseReadLater: items.slice(0, 250) });
+      showToast('Saved locally for read later');
+    }
+  }
+
   // ---- Add Link Screen ----
   let addLinkTab = null;
 
@@ -381,6 +406,7 @@
 
     document.getElementById('action-home-link').addEventListener('click', addToHomeLinks);
     document.getElementById('action-add-link').addEventListener('click', openAddLink);
+    document.getElementById('action-read-later').addEventListener('click', saveReadLater);
     document.getElementById('action-qr').addEventListener('click', generateQR);
 
     document.getElementById('add-link-back').addEventListener('click', closeAddLink);
